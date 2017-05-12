@@ -1,5 +1,4 @@
-import os, re, sys
-import commands
+import re
 
 import SiteMover
 from futil import *
