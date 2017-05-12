@@ -990,7 +990,7 @@ if __name__ == "__main__":
     #runJob.walltime = 105 # minutes
     runJob.max_nodes =  350 #2000
     runJob.number_of_threads = 16  # 1 - one thread per task
-    runJob.min_walltime = 45  # min. 2 hour for gap
+    runJob.min_walltime = 75  # min. 2 hour for gap
     runJob.waittime = 5
     runJob.nodes = 15
     runJob.partition_comp = 'titan'

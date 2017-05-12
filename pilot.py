@@ -2096,7 +2096,7 @@ def getNewJob(tofile=True, num_of_job = 350):
     walltime = 1
     default = True
     if num_of_job > 1:
-        nodes, walltime, default = get_hpc_resources(max_nodes=num_of_job, min_nodes = 15, min_walltime=60)
+        nodes, walltime, default = get_hpc_resources(max_nodes=num_of_job, min_nodes = 15, min_walltime=80)
         pUtil.tolog("Availble nodes: %s, Walltime: %s" % (nodes, walltime))
         if default:
             return [], "No availible resources"
