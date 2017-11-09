@@ -350,6 +350,8 @@ class Monitor:
                 for file_name in j.outFiles:
                     findFlag = False
                     # locate the file first
+                    pUtil.tolog("Verifying output file size for job %s" % j.jobId)
+                    tolog("Going to call in (verifyOutputFileSizes): [ find %s -name %s ] [%s]" % (j.workdir, file_name, j.jobId))
                     out = commands.getoutput("find %s -name %s" % (j.workdir, file_name))
                     if out != "":
                         for line in out.split('\n'):
@@ -366,9 +368,12 @@ class Monitor:
                             except:
                                 pass
                     if not findFlag and file_name != j.logFile:
-    #                if not findFlag and not ".log." in file_name:
-                        pUtil.tolog("Could not access file %s: %s" % (file_name, out))
-    
+                        #if not findFlag and not ".log." in file_name:
+                        try:
+                            pUtil.tolog("Could not access file %s: %s [Job: %s]" % (j.workdir, file_name, j.jobId))
+                        except:
+                            pUtil.tolog("Something goes very wrong with verification of output [%s] for job [ %s ] " % (file_name, j.jobId))
+
         return rc, pilotErrorDiag, job_index
             
     def __checkOutputFileSizes(self):

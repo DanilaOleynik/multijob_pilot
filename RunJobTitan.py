@@ -22,7 +22,7 @@ from FileStateClient import updateFileStates, dumpFileStates
 from ErrorDiagnosis import ErrorDiagnosis # import here to avoid issues seen at BU with missing module
 from PilotErrors import PilotErrors
 from datetime import datetime
-from shutil import copy2
+from shutil import copy2, copyfile
 from glob import glob
 from time import mktime, gmtime, strftime
 from FileHandling import getExtension
@@ -699,33 +699,27 @@ class RunJobTitan(RunJobHPC):
         # special setup command. should be placed in queue defenition (or job defenition) ?
         setup_commands = ['source /lustre/atlas/proj-shared/csc108/app_dir/pilot/grid_env/external/setup.sh',
                           'source $MODULESHOME/init/bash',
-                          #'module load python',
-                          #'module load python_mpi4py',
-                          'tmp_dirname=$PBS_O_WORKDIR',
+                          'tmp_dirname=/tmp/scratch',
                           'tmp_dirname+="/tmp"',
-                          'echo $tmp_dirname',
-                          'mkdir -p $tmp_dirname',
                           'export TEMP=$tmp_dirname',
                           'export TMPDIR=$TEMP',
                           'export TMP=$TEMP',
-                          #'export LD_LIBRARY_PATH=/opt/cray/lib64:$LD_LIBRARY_PATH',
-                          'export LD_LIBRARY_PATH=/lustre/atlas/proj-shared/csc108/app_dir/atlas_app/atlas_rel/ldpatch:$LD_LIBRARY_PATH',
+                          'export LD_LIBRARY_PATH=/ccs/proj/csc108/AtlasReleases/ldpatch:$LD_LIBRARY_PATH',
                           'export ATHENA_PROC_NUMBER=16',
                           'export G4ATLAS_SKIPFILEPEEK=1',
                           'cd $PBS_O_WORKDIR',
-                          'export SW_INSTALL_AREA=/lustre/atlas/proj-shared/csc108/app_dir/atlas_app/atlas_rel/21.0.15',
+                          'export SW_INSTALL_AREA=/ccs/proj/csc108/AtlasReleases/21.0.15',
                           'source $SW_INSTALL_AREA/AtlasSetup/scripts/asetup.sh 21.0.15 --releasesarea=$SW_INSTALL_AREA --cmakearea=$SW_INSTALL_AREA/sw/lcg/contrib/CMake --gcclocation=$SW_INSTALL_AREA/sw/lcg/releases/gcc/4.9.3/x86_64-slc6',
-                          'export PYTHONPATH=$PYTHONPATH:/lustre/atlas/world-shared/csc108/lib/python2.7/site-packages/',
+                          'export PYTHONPATH=$PYTHONPATH:/ccs/proj/csc108/AtlasReleases/python2.7/site-packages/',
                           'export PANDA_RESOURCE=\"ORNL_Titan_MCORE\"',
                           'export ROOT_TTREECACHE_SIZE=1',
                           'export RUCIO_APPID=\"simul\"',
-                          'export RUCIO_ACCOUNT=\"pilot\"'
-                          'export CORAL_DBLOOKUP_PATH=$SW_INSTALL_AREA/DBRelease/current/XMLConfig',
+                          'export RUCIO_ACCOUNT=\"pilot\"',
+                          'export CORAL_DBLOOKUP_PATH=/ccs/proj/csc108/AtlasReleases/21.0.15/nfs_db_files',
                           'export CORAL_AUTH_PATH=$SW_INSTALL_AREA/DBRelease/current/XMLConfig',
-                          'export DATAPATH=/lustre/atlas/proj-shared/csc108/ATLAS_db/21.0.15/DBRelease/current:$DATAPATH'
+                          'export DATAPATH=$SW_INSTALL_AREA/DBRelease/current:$DATAPATH'
                           ]
-        
-        
+
         # loop over all run commands (only >1 for multi-trfs)
         current_job_number = 1
         getstatusoutput_was_interrupted = False
@@ -770,12 +764,11 @@ class RunJobTitan(RunJobHPC):
             to_script = "\n".join(setup_commands)
             #to_script = to_script + "\n" +"\n".join(_env)
             #to_script = "%s\naprun -n %s -d %s %s/multi-job_mpi_Sim_tf_v2.py list_jobs" % (to_script, cpu_number/self.number_of_threads, self.number_of_threads, cur_dir)    
-            to_script = "%s\naprun -n %s -d %s %s/multi-job_mpi_Sim_tf_v2.py list_jobs" % (to_script, cpu_number/self.number_of_threads, self.number_of_threads, cur_dir)    
-            
+            to_script = "%s\naprun -n %s -d %s %s/multi-job_mpi_Sim_tf_v2.py list_jobs" % (to_script, cpu_number/self.number_of_threads, self.number_of_threads, cur_dir)
+            hpcjobId = ''
             
             thisExperiment.updateJobSetupScript(cur_dir, to_script=to_script)
             
-            # Simple SAGA fork variant
             tolog("******* SAGA call to execute payload *********")
             try:
 
@@ -812,11 +805,8 @@ class RunJobTitan(RunJobHPC):
                     fork_job.wait()
                     for j in jobs:  
                         j.hpcStatus = "Re-scheduled By Pilot"
-                    #rt = RunJobUtilities.updatePilotServer(j, self.getPilotServer(), self.getPilotPort())
                     return self.executePayload(thisExperiment, runCommandsList, jobs, repeat_num)
-                    
-                    #tolog("Wait time (%s s.) exceed, job cancelled" % self.waittime)
-                
+
                 for j in jobs[:]: 
                     j.coreCount = self.cpu_number_per_node
                     if j.jobId in _to_be_failed:
@@ -913,6 +903,19 @@ class RunJobTitan(RunJobHPC):
             tolog("Payload execution failed: res = %s" % (str(res_tuple)))
     
         t1 = os.times()
+
+        # About to save local copy of MPI log
+        if os.path.exists('MPI_stdout.txt') and hpcjobId:
+            mpi_log_path = '/lustre/atlas/proj-shared/csc108/pilots_logs/mpi_logs/' + datetime.now().strftime("%Y-%m-%d")
+            dst_file_name = '/' + hpcjobId.split('-')[1][1:-1] + '_MPI_stdout.txt'
+            try:
+                if not os.path.exists(mpi_log_path):
+                    os.makedirs(mpi_log_path)
+                copyfile('MPI_stdout.txt', mpi_log_path + dst_file_name)
+            except:
+                tolog("Local copy of MPI log failed")
+                pass
+
         #t = map(lambda x, y:x-y, t1, t0) # get the time consumed
         for j in jobs[:]:
             j.cpuConsumptionUnit = "s" 

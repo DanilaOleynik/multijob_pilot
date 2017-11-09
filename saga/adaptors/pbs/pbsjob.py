@@ -249,7 +249,7 @@ def _pbscript_generator(url, logger, jd, ppn, pbs_version, is_cray=False, queue=
         if 'PBSPro_12' in pbs_version:
             logger.info("Using Cray XT (e.g. Archer) specific '#PBS -l select=xx' flags (PBSPro_12).")
             pbs_params += "#PBS -l select=%d\n" % nnodes
-        elif '5.1.0.h1' in pbs_version:
+        elif '6.1.1.1.h2' in pbs_version:
             logger.info("Using Titan (Cray XP) specific '#PBS -l nodes=xx'")
             pbs_params += "#PBS -l nodes=%d\n" % nnodes
         elif '4.2.7' in pbs_version:
@@ -265,7 +265,7 @@ def _pbscript_generator(url, logger, jd, ppn, pbs_version, is_cray=False, queue=
     elif '4.2.7' in pbs_version:
         logger.info("Using Cray XT @ NERSC (e.g. Hopper) specific '#PBS -l mppwidth=xx' flags (PBSPro_10).")
         pbs_params += "#PBS -l mppwidth=%s \n" % jd.total_cpu_count
-    elif '6.0.2' in pbs_version:
+    elif '6.1.1.1.h2' in pbs_version:
         logger.info("Using Titan (Cray XP) DTN  specific '#PBS -l nodes=xx'")
         pbs_params += "#PBS -l nodes=%d\n" % nnodes
     elif  'PBSPro_12' in pbs_version:
