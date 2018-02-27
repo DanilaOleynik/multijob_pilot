@@ -1983,13 +1983,13 @@ class ATLASExperiment(Experiment):
             if os.path.exists(init_path):
                 path = init_path
             else:
-                tolog("File does not exist either: %s" % (init_path))
+                #tolog("File does not exist either: %s" % (init_path))
                 path = ""
 
             if path == "" and allowTxtFile:
                 path = os.path.join(workdir, self.getUtilityOutputFilename())
-                if not os.path.exists(path):
-                    tolog("File does not exist either: %s" % (path))
+                #if not os.path.exists(path):
+                #    tolog("File does not exist either: %s" % (path))
 
         return path
 
@@ -2003,7 +2003,7 @@ class ATLASExperiment(Experiment):
         # Note that only the final json file will contain the totRBYTES, etc
         summary_dictionary = self.getMemoryValues(workdir, pilot_initdir)
 
-        tolog("summary_dictionary=%s"%str(summary_dictionary))
+        #tolog("summary_dictionary=%s"%str(summary_dictionary))
 
         # Fill the node dictionary
         if summary_dictionary and summary_dictionary != {}:
@@ -2071,7 +2071,8 @@ class ATLASExperiment(Experiment):
             else:
                 tolog("totRCHAR,totWCHAR,totRBYTES,totWBYTES,rateRCHAR,rateWCHAR,rateRBYTES,rateWBYTES were extracted from memory monitor json")
         else:
-            tolog("Memory summary dictionary not yet available")
+            #tolog("Memory summary dictionary not yet available")
+            pass
 
         return node
 

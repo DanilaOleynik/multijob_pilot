@@ -90,10 +90,10 @@ def updateJobInfo(job, server, port, logfile=None, final=False, latereg=False):
         msgdic['coreCount'] = job.coreCount
     if job.startTime:
         msgdic['startTime'] = job.startTime
-        tolog('Job start time(UTC): %s' % msgdic['startTime'])
+        #tolog('Job start time(UTC): %s' % msgdic['startTime'])
     if job.endTime:
         msgdic['endTime'] = job.endTime
-        tolog("Job end time(UTC): %s" % msgdic['endTime'])
+        #tolog("Job end time(UTC): %s" % msgdic['endTime'])
     if job.HPCJobId:
         msgdic['HPCJobId'] = job.HPCJobId
 
@@ -111,13 +111,13 @@ def updateJobInfo(job, server, port, logfile=None, final=False, latereg=False):
     if job.filesAltStageOut > 0:
         msgdic["filesAltStageOut"] = job.filesAltStageOut
         tolog("filesAltStageOut=%d" % (job.filesAltStageOut))
-    else:
-        tolog("filesAltStageOut not set")
+    #else:
+    #    tolog("filesAltStageOut not set")
     if job.filesNormalStageOut > 0:
         msgdic["filesNormalStageOut"] = job.filesNormalStageOut
-        tolog("filesNormalStageOut=%d" % (job.filesNormalStageOut))
-    else:
-        tolog("filesNormalStageOut not set")
+        #tolog("filesNormalStageOut=%d" % (job.filesNormalStageOut))
+    #else:
+        #tolog("filesNormalStageOut not set")
 
     # truncate already now if necesary so not too much junk is sent back to the local pilot TCP server
     if job.pilotErrorDiag != None:
@@ -163,21 +163,21 @@ def updateJobInfo(job, server, port, logfile=None, final=False, latereg=False):
     for k in msgdic.keys():
         msg += "%s=%s;" % (k, msgdic[k])
 
-    tolog("About to send TCP message to main pilot thread of length = %d" % len(msg))
+    #tolog("About to send TCP message to main pilot thread of length = %d" % len(msg))
     if len(msg) > 4096:
         tolog("!!WARNING!!1234!! TCP message too long (cannot truncate easily without harming encoded message)")
     try:
         s.send(msg)
-        tolog("(Sent)")
+        #tolog("(Sent)")
         tm = s.recv(1024)
-        tolog("(Received)")
+        #tolog("(Received)")
     except Exception, e:
         tolog("!!WARNING!!2999!! updateJobInfo caught a send/receive exception: %s" % str(e))
         return "NOTOK"
     else:
         s.settimeout(None)
         s.close()
-        tolog("Successfully sent and received TCP message")
+        #tolog("Successfully sent and received TCP message")
 
     return tm  # =OK or NOTOK
 
@@ -213,7 +213,7 @@ def updatePilotServer(job, server, port, logfile=None, final=False, latereg=Fals
     while trial <= max_trials:
         rt = updateJobInfo(job, server, port, logfile=logfile, final=final, latereg=latereg)
         if rt == "OK":
-            tolog("Successfully updated local pilot TCP server for JobID %s at %s (Trial %d/%d)" % (job.jobId, timeStamp(), trial, max_trials))
+            #tolog("Successfully updated local pilot TCP server for JobID %s at %s (Trial %d/%d)" % (job.jobId, timeStamp(), trial, max_trials))
             status = True
             break
         else:

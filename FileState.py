@@ -249,11 +249,12 @@ class FileState:
     def dumpFileStates(self, ftype="output"):
         """ Print all the files and their states """
 
+        log_str = 'File state dump:\n'
         if ftype == "output":
-            tolog("File name  /  File state  /  Registration state")
+            log_str += "File name  /  File state  /  Registration state"
         else:
-            tolog("File name  /  File state  /  Transfer mode")
-        tolog("-" * 100)
+            log_str += "File name  /  File state  /  Transfer mode"
+        log_str += ("-" * 100)
         n = self.getNumberOfFiles()
         i = 1
         if n > 0:
@@ -262,9 +263,10 @@ class FileState:
             for filename in sorted_keys:
                 states = self.fileStateDictionary[filename]
                 if len(states) == 2:
-                    tolog("%d. %s\t%s\t%s" % (i, filename, states[0], states[1]))
+                    log_str += ("%d. %s\t%s\t%s" % (i, filename, states[0], states[1]))
                 else:
-                    tolog("%s\t-\t-" % (filename))
+                    log_str += ("%s\t-\t-" % filename)
                 i += 1
         else:
-            tolog("(No files)")
+            log_str += "(No files)"
+        tolog(log_str)

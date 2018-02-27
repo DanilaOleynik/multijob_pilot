@@ -282,23 +282,23 @@ class PandaServerClient:
         if self.__pilotId:
             use_newmover = str(readpar('use_newmover')).lower() in ["1", "true"]
             use_newmover_tag = 'NEWMOVER-%s' % ('ON' if use_newmover else 'OFF')
-            tolog("Checking if new site movers workflow is enabled: use_newmover=%s" % use_newmover)
+            #tolog("Checking if new site movers workflow is enabled: use_newmover=%s" % use_newmover)
 
             # report the batch system job id, if available
             batchSystemType, _id = getBatchSystemJobID()
 
             if batchSystemType:
-                tolog("Batch system: %s" % batchSystemType)
-                tolog("Batch system job ID: %s" % _id)
+                #tolog("Batch system: %s" % batchSystemType)
+                #tolog("Batch system job ID: %s" % _id)
                 node['pilotID'] = "%s|%s|%s|%s|%s" % (self.__pilotId, use_newmover_tag, batchSystemType, self.__pilot_version_tag, self.__pilot_version)
                 node['batchID'] = _id
-                tolog("Will send batchID: %s and pilotID: %s" % (node['batchID'], node['pilotID']))
+                #tolog("Will send batchID: %s and pilotID: %s" % (node['batchID'], node['pilotID']))
             else:
-                tolog("Batch system type was not identified (will not be reported)")
+                #tolog("Batch system type was not identified (will not be reported)")
                 node['pilotID'] = "%s|%s|%s|%s" % (self.__pilotId, use_newmover_tag, self.__pilot_version_tag, self.__pilot_version)
-                tolog("Will send pilotID: %s" % node['pilotID'])
+                #tolog("Will send pilotID: %s" % node['pilotID'])
 
-            tolog("pilotId: %s" % str(self.__pilotId))
+            #tolog("pilotId: %s" % str(self.__pilotId))
         if log and (job.result[0] == 'failed' or job.result[0] == 'holding' or "outbound connections" in log):
             node['pilotLog'] = log
 
@@ -358,8 +358,8 @@ class PandaServerClient:
                         tolog("Encountered high priority error code %d" % (pilotErrorCode))
                     job.result[2] = pilotErrorCode
                     job.pilotErrorDiag = pilotErrorDiag
-        else:
-            tolog("Did not find any reported high priority errors")
+        #else:
+        #    tolog("Did not find any reported high priority errors")
 
         # send pilotErrorDiag for finished, failed and holding jobs
         if job.result[0] == 'finished' or job.result[0] == 'failed' or job.result[0] == 'holding':
@@ -469,7 +469,7 @@ class PandaServerClient:
         """ Get the metadata xml """
 
         node_xml = ""
-        tolog("getXML called")
+        #tolog("getXML called")
 
         # for backwards compatibility
         try:
@@ -737,7 +737,7 @@ class PandaServerClient:
         jr = job recovery mode
         """
 
-        tolog("Updating job status in updatePandaServer(): PandaId=%s, result=%s, time=%s" % (job.getState()))
+        #tolog("Updating job status in updatePandaServer(): PandaId=%s, result=%s, time=%s" % (job.getState()))
 
         # set any holding job to failed for sites that do not use job recovery (e.g. sites with LSF, that immediately
         # removes any work directory after the LSF job finishes which of course makes job recovery impossible)
@@ -793,13 +793,13 @@ class PandaServerClient:
                         tolog("!!WARNING!!3322!! Failed with text indexer: %s" % (e))
             else:
                 tolog("stdout_path not set")
-        else:
-            if job.debug.lower() != "true":
-                tolog("Stdout tail will not be sent (debug=False)")
-            elif stdout_tail == "":
-                tolog("Stdout tail will not be sent (no stdout tail)")
-            else:
-                tolog("Stdout tail will not be sent (debug=%s, stdout_tail=\'%s\')" % (str(job.debug), stdout_tail))
+        #else:
+        #    if job.debug.lower() != "true":
+        #        tolog("Stdout tail will not be sent (debug=False)")
+        #    elif stdout_tail == "":
+        #        tolog("Stdout tail will not be sent (no stdout tail)")
+        #    else:
+        #        tolog("Stdout tail will not be sent (debug=%s, stdout_tail=\'%s\')" % (str(job.debug), stdout_tail))
 
         # PN fake lostheartbeat
         #    if job.result[0] == "finished":
@@ -966,9 +966,9 @@ class PandaServerClient:
             tolog("makeHTTPUpdate returned: %s" % str(ret))
             return 1, None
 
-        tolog("ret = %s" % str(ret))
+        #tolog("ret = %s" % str(ret))
         data = ret[1]
-        tolog("data = %s" % str(data))
+        #tolog("data = %s" % str(data))
 
         if data.has_key("command"):
             job.action = data['command']
@@ -978,8 +978,8 @@ class PandaServerClient:
         except:
             tolog("!!WARNING!!1300!! Having problem updating job status, set the awk to 1 for now, and continue...")
             awk = "1"
-        else:
-            tolog("jobDispatcher acknowledged with %s" % (awk))
+        #else:
+        #    tolog("jobDispatcher acknowledged with %s" % (awk))
 
         # need to have a return code so subprocess knows if update goes ok or not
         ecode = int(awk) # use the awk code from jobdispatcher as the exit code

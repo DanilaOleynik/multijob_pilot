@@ -13,7 +13,7 @@ class UpdateHandler(BaseRequestHandler):
 
     def handle(self):
         try:
-            pUtil.tolog("Connected from %s" % str(self.client_address))
+            #pUtil.tolog("Connected from %s" % str(self.client_address))
             data = self.request.recv(4096)
             jobmsg = data.split(";")
             jobinfo = {}
@@ -64,8 +64,8 @@ class UpdateHandler(BaseRequestHandler):
                             j.pgrp = int(jobinfo["pgrp"])
                         except:
                             pUtil.tolog("!!WARNING!!2222!! Failed to convert pgrp value to int: %s" % (e))
-                        else:
-                            pUtil.tolog("Process groups: %d (pilot), %d (sub process)" % (os.getpgrp(), j.pgrp))
+                        #else:
+                        #    pUtil.tolog("Process groups: %d (pilot), %d (sub process)" % (os.getpgrp(), j.pgrp))
 
                         tmp = j.result[0]
                         if (tmp == "failed" or tmp == "holding" or tmp == "finished") and jobinfo.has_key("logfile"):

@@ -724,7 +724,8 @@ class RunJobTitan(RunJobHPC):
         current_job_number = 1
         getstatusoutput_was_interrupted = False
         number_of_jobs = len(runCommandsList)
-        
+
+
         if number_of_jobs < self.max_nodes:
             tolog("Number of jobs %s less than upper limit of requested nodes %s" % (number_of_jobs, self.max_nodes))
             self.max_nodes = number_of_jobs
@@ -749,11 +750,11 @@ class RunJobTitan(RunJobHPC):
                 #tolog("Job %s added to list for execution (job_cnt = %s, nodes = %s)" % (runCommandsList[i]["jobId"], nl, nodes))
             else:
                 _to_be_failed.append(runCommandsList[i]["jobId"])
-                tolog("Job %s added to be failed (job_cnt = %s, nodes = %s)" % (runCommandsList[i]["jobId"], nl, nodes))
+                #tolog("Job %s added to be failed (job_cnt = %s, nodes = %s)" % (runCommandsList[i]["jobId"], nl, nodes))
             nl += 1
 
         f_jobs.close()
-        tolog("env = %s" % _env)
+        #tolog("env = %s" % _env)
         _final_hpc_status = "NotLaunched"
         cons_time_sec = 0
         UTCstartTime = ''
@@ -807,10 +808,12 @@ class RunJobTitan(RunJobHPC):
                         j.hpcStatus = "Re-scheduled By Pilot"
                     return self.executePayload(thisExperiment, runCommandsList, jobs, repeat_num)
 
+                if _to_be_failed:
+                    tolog("%s of jobs should be failed as rejected by LRMS" % len(_to_be_failed))
                 for j in jobs[:]: 
                     j.coreCount = self.cpu_number_per_node
                     if j.jobId in _to_be_failed:
-                        tolog("Job %s should be failed as rejected by LRMS" % j.jobId)
+                        #tolog("Job %s should be failed as rejected by LRMS" % j.jobId)
                         j.hpcStatus = "Rejected"
                         #to avoid wrong calculation of walltime... set endTime = statTime
                         f_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
@@ -828,11 +831,11 @@ class RunJobTitan(RunJobHPC):
                         j.HPCJobId = hpcjobId.split('-')[1][1:-1]
                         j.startTime = self.GetUTCTime(fork_job.started)
                         rt = RunJobUtilities.updatePilotServer(j, self.getPilotServer(), self.getPilotPort())
-                        if rt:
-                            tolog("TCP Server updated with HPC Status and CoreCount and Running state from: %s" % j.startTime)
-                        else:
+                        if not rt:
+                            #tolog("TCP Server updated with HPC Status and CoreCount and Running state from: %s" % j.startTime)
+                        #else:
                             tolog("TCP Server NOT updated with HPC Status and CoreCount (WHY? - who knows ;-)")
-                        
+                            tolog(rt)
                     
                 fork_job.wait()
                 tolog("MPI task ID            : %s" % (fork_job.id))
@@ -882,11 +885,11 @@ class RunJobTitan(RunJobHPC):
                 j.timeExe = cons_time_sec
                 j.setState(["transferring", j.result[1], j.result[2]])
                 rt = RunJobUtilities.updatePilotServer(j, self.getPilotServer(), self.getPilotPort())
-                if rt:
-                    tolog("TCP Server updated with HPC Status and CoreCount. Start time: %s End time: %s" %(j.startTime, j.endTime))
-                else:
+                if not rt:
+                    #tolog("TCP Server updated with HPC Status and CoreCount. Start time: %s End time: %s" %(j.startTime, j.endTime))
+                #else:
                     tolog("TCP Server NOT updated with HPC Status and CoreCount (WHY? - who knows ;-)")
-    
+                    tolog(rt)
         except Exception, e:
             tolog("!!FAILED!!3000!! Failed to run command %s" % str(e))
             if 'format_exc' in traceback.__all__:
@@ -940,8 +943,8 @@ class RunJobTitan(RunJobHPC):
                 jobs.remove(j)
             else:
                 j.cpuConsumptionTime = int(cct * j.cpuConversionFactor)
-                tolog("Job %s CPU usage: %s %s" % (j.jobId, j.cpuConsumptionTime, j.cpuConsumptionUnit))
-                tolog("Job %s CPU conversion factor: %1.10f" % (j.jobId, j.cpuConversionFactor))
+                #tolog("Job %s CPU usage: %s %s" % (j.jobId, j.cpuConsumptionTime, j.cpuConsumptionUnit))
+                #tolog("Job %s CPU conversion factor: %1.10f" % (j.jobId, j.cpuConversionFactor))
             #j.timeExe = int(round(t1[4] - t0[4])) very old method
         
         jobs_results = {}
@@ -993,7 +996,7 @@ if __name__ == "__main__":
     #runJob.walltime = 105 # minutes
     runJob.max_nodes =  350 #2000
     runJob.number_of_threads = 16  # 1 - one thread per task
-    runJob.min_walltime = 75  # min. 2 hour for gap
+    runJob.min_walltime = 95  # min. 2 hour for gap
     runJob.waittime = 5
     runJob.nodes = 15
     runJob.partition_comp = 'titan'
@@ -1244,7 +1247,7 @@ if __name__ == "__main__":
         t1_stagein = os.times()
         t_stagein = t1_stagein[4] - t0_stagein[4]
         tolog("StageIn for %s jobs took %s s." % (len(ins), t_stagein))
-        tolog(ins)
+        # tolog(ins)
         # (stage-in ends here) .............................................................................
         if jobs:
             tolog("About to launch %s jobs in %s commands" % (len(jobs), len(runCommandsList)))

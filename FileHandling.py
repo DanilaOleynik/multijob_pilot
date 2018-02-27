@@ -401,8 +401,8 @@ def getHighestPriorityError(jobId, workdir):
                     tolog("!!WARNING!!2322!! Could not locate the highest priority error")
         else:
             tolog("Pilot error report does not contain any error info for job %s" % (jobId))
-    else:
-        tolog("Pilot error report does not exist: %s (should only exist if there actually was an error)" % (filename))
+    #else:
+    #    tolog("Pilot error report does not exist: %s (should only exist if there actually was an error)" % (filename))
 
     return errorInfo
 

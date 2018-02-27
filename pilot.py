@@ -2096,7 +2096,7 @@ def getNewJob(tofile=True, num_of_job = 10):
     walltime = 1
     default = True
     if num_of_job > 1:
-        nodes, walltime, default = get_hpc_resources(max_nodes=num_of_job, min_nodes = 3, min_walltime=85)
+        nodes, walltime, default = get_hpc_resources(max_nodes=num_of_job, min_nodes = 10, min_walltime=105)
         pUtil.tolog("Availble nodes: %s, Walltime: %s" % (nodes, walltime))
         if default:
             return [], "No availible resources"
@@ -2211,17 +2211,17 @@ def getNewJob(tofile=True, num_of_job = 10):
             job['PandaID'] = str(job['PandaID'])
             if job.has_key('prodSourceLabel'):
                 if job['prodSourceLabel'] == "":
-                    pUtil.tolog("Setting prodSourceLabel in job def data: %s" % (prodSourceLabel))
+                    #pUtil.tolog("Setting prodSourceLabel in job def data: %s" % (prodSourceLabel))
                     job['prodSourceLabel'] = prodSourceLabel
                 else:
-                    pUtil.tolog("prodSourceLabel already set in job def data: %s" % (job['prodSourceLabel']))
+                    #pUtil.tolog("prodSourceLabel already set in job def data: %s" % (job['prodSourceLabel']))
         
                     # override ptest value if install job to allow testing using dev pilot
                     if prodSourceLabel == "ptest" and "atlpan/install/sw-mgr" in job['transformation']:
                         pUtil.tolog("Dev pilot will run test install job (job.prodSourceLabel set to \'install\')")
                         job['prodSourceLabel'] = "install"
                     else:
-                        pUtil.tolog("Adding prodSourceLabel to job def data: %s" % (prodSourceLabel))
+                        #pUtil.tolog("Adding prodSourceLabel to job def data: %s" % (prodSourceLabel))
                         job['prodSourceLabel'] = prodSourceLabel
          
             if job.has_key('logGUID'):
@@ -2618,7 +2618,7 @@ def runMain(runpars):
                 return pUtil.shellExitCode(0)
 
         # perform disk cleanup ....................................................................................
-        diskCleanup(env['thisSite'].wntmpdir, env['uflag'])
+        # diskCleanup(env['thisSite'].wntmpdir, env['uflag'])
 
         # multi job loop will begin here...........................................................................
 

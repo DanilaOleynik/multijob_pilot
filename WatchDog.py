@@ -14,7 +14,7 @@ class WatchDog:
         check children processes, collect zombie jobs, and update jobDic status
         """
         
-        pUtil.tolog("Watchdog to check children processes")
+        #pUtil.tolog("Watchdog to check children processes")
         error = PilotErrors()
 
         try:
@@ -24,13 +24,13 @@ class WatchDog:
             if str(e).rstrip() == "[Errno 10] No child processes":
                 pilotErrorDiag = "Exception caught by pilot watchdog: %s" % str(e)
                 for j in self.__env['jobDic']['prod'][1]:
-                    pUtil.tolog("Watchdog. JobID: %s, status [%s]" % (j.jobId, j.result[0])) 
+                    #pUtil.tolog("Watchdog. JobID: %s, status [%s]" % (j.jobId, j.result[0]))
                     if j.result[0] in ["finished", "failed", "holding", "transferring"]:
                         pUtil.tolog("Job: %s already %s" % (j.jobId, j.result[0]))
                     else:    
-                        pUtil.tolog("!!FAILED!!1000!! Pilot setting state to failed since there are no child processes")
-                        pUtil.tolog("!!FAILED!!1000!! %s" % (pilotErrorDiag))
-                        pUtil.tolog("Watchdog will fail JobID: %s  status: [%s]" % (j.jobId, j.result[0]))
+                        #pUtil.tolog("!!FAILED!!1000!! Pilot setting state to failed since there are no child processes")
+                        #pUtil.tolog("!!FAILED!!1000!! %s" % (pilotErrorDiag))
+                        #pUtil.tolog("Watchdog will fail JobID: %s  status: [%s]" % (j.jobId, j.result[0]))
                         j.result[0] = "failed"
                         j.currentState = j.result[0]
                         if j.result[2] == 0:

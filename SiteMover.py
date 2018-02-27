@@ -651,10 +651,12 @@ class SiteMover(object):
         # Special case for GROUPDISK
         # In this case, (e.g.) token = 'dst:AGLT2_PERF-MUONS'
         # Pilot should then consult TiersOfATLAS and get it from the corresponding srm entry
+
         if token != None and "dst:" in token:
             # if the job comes from a different cloud than the sites' cloud, destination will be set to "" and the
             # default space token will be used instead (the transfer to groupdisk will be handled by DDM not pilot)
-            destination = self.getGroupDiskPath(endpoint=token)
+
+            # destination = self.getGroupDiskPath(endpoint=token)
 
             if destination != "":
                 tolog("GROUPDISK token requested (%s), destination=%s" % (token, destination))
@@ -662,7 +664,7 @@ class SiteMover(object):
             else:
                 # Reset the space token to the default value
                 default_token, _se = SiteMover.extractSE(readpar('se'))
-                tolog("Requested space token %s reset to %s" % (token, default_token))
+                tolog(" %s reset to %s" % (token, default_token))
                 token = default_token
 
         if not analyJob:

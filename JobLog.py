@@ -901,7 +901,7 @@ class JobLog:
 #                                              stdout_path = self.__env['stdout_path'],
                                               additionalMetadata = expSpecificMetadata)
         if ret == 0:
-            tolog("Successfully updated panda server at %s" % timeStamp())
+            #tolog("Successfully updated panda server at %s" % timeStamp())
 
             if not (os.environ.has_key('Nordugrid_pilot') or site.sitename == 'CERNVM'):
                 # remove the job state file for finished and failed jobs (recovery will never be necessary for them)

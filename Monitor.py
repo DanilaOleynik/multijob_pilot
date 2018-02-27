@@ -136,10 +136,10 @@ class Monitor:
 
                         # remove the payload stdout file after the log extracts have been created
 
-                    else:
-                        pUtil.tolog("Payload stdout (%s) within allowed size limit (%d B): %d B" % (filename, self.__env['localsizelimit_stdout']*1024, fsize))
-            else:
-                    pUtil.tolog("(Skipping file size check of payload stdout file (%s) since it has not been created yet)" % (filename))
+                    #else:
+                    #    pUtil.tolog("Payload stdout (%s) within allowed size limit (%d B): %d B" % (filename, self.__env['localsizelimit_stdout']*1024, fsize))
+            #else:
+                    #pUtil.tolog("(Skipping file size check of payload stdout file (%s) since it has not been created yet)" % (filename))
 
     def __getMaxWorkDirSize(self):
         """
@@ -350,8 +350,8 @@ class Monitor:
                 for file_name in j.outFiles:
                     findFlag = False
                     # locate the file first
-                    pUtil.tolog("Verifying output file size for job %s" % j.jobId)
-                    tolog("Going to call in (verifyOutputFileSizes): [ find %s -name %s ] [%s]" % (j.workdir, file_name, j.jobId))
+                    #pUtil.tolog("Verifying output file size for job %s" % j.jobId)
+                    #tolog("Going to call in (verifyOutputFileSizes): [ find %s -name %s ] [%s]" % (j.workdir, file_name, j.jobId))
                     out = commands.getoutput("find %s -name %s" % (j.workdir, file_name))
                     if out != "":
                         for line in out.split('\n'):
@@ -363,8 +363,8 @@ class Monitor:
                                     pUtil.tolog('!!WARNING!!2999!!%s' % (pilotErrorDiag))
                                     job_index = j
                                     rc = self.__error.ERR_OUTPUTFILETOOLARGE
-                                else:
-                                    pUtil.tolog('File: \"%s\" currently has size %d < %d B)' % (line, file_size, self.__env['outputlimit']))
+                                #else:
+                                #    pUtil.tolog('File: \"%s\" currently has size %d < %d B)' % (line, file_size, self.__env['outputlimit']))
                             except:
                                 pass
                     if not findFlag and file_name != j.logFile:
@@ -382,9 +382,9 @@ class Monitor:
         
         # verify the file sizes
         rc, pilotErrorDiag, job_index = self.__verifyOutputFileSizes()
-        if rc == 0:
-            pUtil.tolog("Completed output file size verification")
-        else:
+        if rc != 0:
+        #    pUtil.tolog("Completed output file size verification")
+        #else:
             # found too large output file, stop the job(s)
             for j in self.__env['jobDic']['prod'][1]:
                 j.result[0] = "failed"
@@ -469,7 +469,7 @@ class Monitor:
         t0_serverupdate = os.times()
         for j in self.__env['jobDic']['prod'][1]:
             tmp = j.result[0]
-            pUtil.tolog("Update job [%s] with state [%s] " % (j.jobId, tmp))  
+            #pUtil.tolog("Update job [%s] with state [%s] " % (j.jobId, tmp))
             if not tmp in ["finished", "failed", "holding"]:
     
                 # get the tail if possible
@@ -477,18 +477,19 @@ class Monitor:
                     self.__env['stdout_tail'] = stdout_dictionary[j.jobId]
                     index = "path-%s" % (j.jobId)
                     self.__env['stdout_path'] = stdout_dictionary[index]
-                    pUtil.tolog("stdout_path=%s at index=%s" % (self.__env['stdout_path'], index))
+                    #pUtil.tolog("stdout_path=%s at index=%s" % (self.__env['stdout_path'], index))
                 except Exception, e:
                     self.__env['stdout_tail'] = "(stdout tail not available)"
                     self.__env['stdout_path'] = ""
-                    pUtil.tolog("no stdout_path: %s" % (e))
+                    #pUtil.tolog("no stdout_path: %s" % (e))
 
                 # update the panda server
                 ret, retNode = pUtil.updatePandaServer(j, stdout_tail = self.__env['stdout_tail'], stdout_path = self.__env['stdout_path'])
-                if ret == 0:
-                    pUtil.tolog("Successfully updated PanDA server at %s [PanDA ID %s]" % (pUtil.timeStamp(), j.jobId))
-                else:
+                if ret != 0:
                     pUtil.tolog("!!WARNING!!1999!! updatePandaServer returned a %d" % (ret))
+                #else:
+                    #pUtil.tolog("Successfully updated PanDA server at %s [PanDA ID %s]" % (pUtil.timeStamp(), j.jobId))
+
     
                 # kill a job if signaled from panda server
                 #if "tobekilled" in self.__env['jobDic'][k][1].action:
@@ -768,7 +769,8 @@ class Monitor:
             job.setState(["failed", 0, self.__error.ERR_MKDIRWORKDIR])
             ret, retNode = pUtil.updatePandaServer(job)
             if ret == 0:
-                pUtil.tolog("Successfully updated panda server at %s" % pUtil.timeStamp())
+                pass
+            #    pUtil.tolog("Successfully updated panda server at %s" % pUtil.timeStamp())
             else:
                 pUtil.tolog("!!WARNING!!1999!! updatePandaServer returned a %d" % (ret))
             # send to stderr
@@ -839,10 +841,10 @@ class Monitor:
                     j.result[0] = 'transferring'
                     # update the panda server
                     ret, retNode = pUtil.updatePandaServer(j, stdout_tail = '', stdout_path = '')
-                    if ret == 0:
-                        pUtil.tolog("Successfully updated panda server for job %s at %s" % (j.jobId, pUtil.timeStamp()))
-                    else:
+                    if ret != 0:
                         pUtil.tolog("!!WARNING!!1999!! updatePandaServer returned a %d" % (ret))
+                    #else:
+                    #    pUtil.tolog("Successfully updated panda server for job %s at %s" % (j.jobId, pUtil.timeStamp()))
                 except:
                     pUtil.tolog("!!WARNING!!1999!! updatePandaServer failed: %s" % (traceback.format_exc()))
                 finally:
@@ -942,7 +944,7 @@ class Monitor:
         else:
             ret, retNode = pUtil.updatePandaServer(job, spaceReport = False)
         if ret == 0:
-            pUtil.tolog("Successfully updated panda server at %s" % pUtil.timeStamp())
+            #pUtil.tolog("Successfully updated panda server at %s" % pUtil.timeStamp())
             self.__env['isServerUpdated'] = True
         else:
             pUtil.tolog("!!WARNING!!1999!! updatePandaServer returned a %d" % (ret))
@@ -1175,7 +1177,7 @@ class Monitor:
                     
                     ec, j.pilotErrorDiag = pUtil.verifyLFNLength(j.outFiles)
                     if ec != 0:
-                        pUtil.tolog("Updating PanDA server for the failed job (error code %d)" % (ec))
+                        #pUtil.tolog("Updating PanDA server for the failed job (error code %d)" % (ec))
                         j.result[0] = 'failed'
                         j.currentState = j.result[0]
                         j.result[2] = ec
@@ -1225,10 +1227,10 @@ class Monitor:
 
                     # do not set self.__jobDic["prod"][1].currentState = "running" here (the state is at this point only needed for the server)
                     ret, retNode = pUtil.updatePandaServer(j)
-                    if ret == 0:
-                        pUtil.tolog("Successfully updated panda server at %s" % pUtil.timeStamp())
-                    else:
+                    if ret != 0:
                         pUtil.tolog("!!WARNING!!1999!! updatePandaServer returned a %d" % (ret))
+                    #else:
+                    #    pUtil.tolog("Successfully updated panda server at %s" % pUtil.timeStamp())
                 t_finish = time.time()
                 update_space_time = t_finish - t_start
                 pUtil.tolog("'Starting' state for %s jobs took: %s sec." % (len(self.__env['jobDic']["prod"][1]), update_space_time))

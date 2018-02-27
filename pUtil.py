@@ -163,7 +163,7 @@ def makeHTTPUpdate(state, node, port, url='pandaserver.cern.ch', path=None):
     while trial <= max_trials:
         # draw a random server URL
         _url = '%s:%s/server/panda' % (url, port)
-        tolog("HTTP connect using server: %s" % (_url))
+        #tolog("HTTP connect using server: %s" % (_url))
         ret = httpConnect(node, _url, path=path)
         if ret[0] and trial == max_trials: # non-zero exit code
             if delay: # final update
@@ -212,11 +212,11 @@ def httpConnect(data, url, mode="UPDATE", sendproxy=False, path=None, experiment
     if cmd != 'updateJob' and data.has_key('attemptNr'):
         tolog("Removing attemptNr from node structure since it is not needed for command %s" % (cmd))
         del data['attemptNr']
-    else:
-        if data.has_key('attemptNr'):
-            tolog("Sending attemptNr=%d for cmd=%s" % (data['attemptNr'], cmd))
-        else:
-            tolog("Will not send attemptNr for cmd=%s" % (cmd))
+    #else:
+    #    if data.has_key('attemptNr'):
+    #        tolog("Sending attemptNr=%d for cmd=%s" % (data['attemptNr'], cmd))
+    #    else:
+    #        tolog("Will not send attemptNr for cmd=%s" % (cmd))
 
     # send the data dictionary to the dispatcher using command cmd
     # return format: status, parsed data, response
@@ -1497,7 +1497,7 @@ def isAnalysisJob(trf):
 def timedCommand(cmd, timeout=300):
     """ Protect cmd with timed_command """
 
-    tolog("Executing command: %s (protected by timed_command, timeout: %d s)" % (cmd, timeout))
+    #tolog("Executing command: %s (protected by timed_command, timeout: %d s)" % (cmd, timeout))
     t0 = os.times()
     try:
         exitcode, telapsed, cout, cerr = timed_command(cmd, timeout)
@@ -1966,7 +1966,7 @@ class _Curl:
             tolog("!!WARNING!!2999!! Can not set --config option since curl.config could not be created, curl will fail")
         com += ' %s' % url
         # execute
-        tolog("Executing command: %s" % (com))
+        # tolog("Executing command: %s" % (com))
         try:
             ret = commands.getstatusoutput(com)
         except Exception, e:
@@ -2012,7 +2012,7 @@ class _Curl:
             tolog("!!WARNING!!2999!! Can not set --config option since curl.config could not be created, curl will fail")
         com += ' %s' % url
         # execute
-        tolog("Executing command: %s" % (com))
+        # tolog("Executing command: %s" % (com))
         try:
             ret = commands.getstatusoutput(com)
         except Exception, e:
@@ -2044,7 +2044,7 @@ class _Curl:
             com += ' -F "%s=@%s"' % (key,data[key])
         com += ' %s' % url
         # execute
-        tolog("Executing command: %s" % (com))
+        # tolog("Executing command: %s" % (com))
         try:
             ret = commands.getstatusoutput(com)
         except Exception, e:
@@ -2136,9 +2136,9 @@ def toServer(baseURL, cmd, data, path, experiment):
         tpre = datetime.datetime.utcnow()
     except:
         pass
-    tolog("toServer: cmd = %s" % (cmd))
-    tolog("toServer: len(data) = %d" % len(data))
-    tolog("data = %s" % str(data))
+    #tolog("toServer: cmd = %s" % (cmd))
+    #tolog("toServer: len(data) = %d" % len(data))
+    #tolog("data = %s" % str(data))
 
     # make sure the job state is an allowed value
     if data.has_key('state'):
@@ -2433,7 +2433,7 @@ def parseDispatcherResponse(response):
                 newList[1] = 'hidden'
                 parList[i] = newList
 
-    tolog("Dispatcher response: %s" % str(parList))
+    #tolog("Dispatcher response: %s" % str(parList))
 
     return data, response
 
@@ -3307,10 +3307,10 @@ def getCmtconfig(jobCmtconfig):
     # the job def should always contain the cmtconfig
     if jobCmtconfig != "" and jobCmtconfig != "None" and jobCmtconfig != "NULL":
         cmtconfig = jobCmtconfig
-        tolog("Will try to use cmtconfig: %s (from job definition)" % (cmtconfig))
+        #tolog("Will try to use cmtconfig: %s (from job definition)" % (cmtconfig))
     else:
         cmtconfig = readpar('cmtconfig')
-        tolog("Will try to use cmtconfig: %s (from schedconfig DB)" % (cmtconfig))
+        #tolog("Will try to use cmtconfig: %s (from schedconfig DB)" % (cmtconfig))
 
     return cmtconfig
 
@@ -3517,7 +3517,7 @@ def getSiteInformation(experiment):
         tolog("!!WARNING!!1114!! SiteInformation factory threw an exception: %s" % (e))
     else:
         _exp = siteInformationClass()
-        tolog("getSiteInformation: got experiment=%s" % (_exp.getExperiment()))
+        #tolog("getSiteInformation: got experiment=%s" % (_exp.getExperiment()))
 
     return _exp
 
@@ -3593,7 +3593,7 @@ def encode_string(_string):
 def decode_string(encoded_string):
     """ Decode a string using parse_qs """
 
-    tolog("Decoding: %s" % (encoded_string))
+    #tolog("Decoding: %s" % (encoded_string))
     imported = False
     try:
         # on modern python, get the parse function from urlparse
@@ -3622,8 +3622,8 @@ def decode_string(encoded_string):
                 decoded_string = decoded_dict['x'][0]
             except Exception, e:
                 tolog("!!WARNING!!1234!! Failed to decode URL encoded string: %s" % (encoded_string))
-        else:
-            tolog("Empty URL encoded string (Nothing to decode)")
+        #else:
+        #    tolog("Empty URL encoded string (Nothing to decode)")
 
         # get rid of useless info
         if decoded_string == "^!^":
@@ -3690,11 +3690,11 @@ def fastCleanup(workdir, pilot_initdir, rmwkdir):
                                 for f in dir_list:
                                     if ".nfs" in f:
                                         fname = os.path.join(workdir, f)
-                                        print "Found NFS lock file: %s" % (fname)
+                                        #print "Found NFS lock file: %s" % (fname)
                                         cmd = "lsof %s" % (fname)
-                                        print "Executing command: %s" % (cmd)
+                                        #print "Executing command: %s" % (cmd)
                                         out = commands.getoutput(cmd)
-                                        print out
+                                        #print out
 
                                         pid = None
                                         pattern = re.compile('sh\s+([0-9]+)')
@@ -3779,7 +3779,7 @@ def getStdoutDictionary(jobDic):
                 try:
                     # get the tail
                     cmd = "tail -%d %s" % (number_of_lines, filename)
-                    tolog("Executing command: %s" % (cmd))
+                    # tolog("Executing command: %s" % (cmd))
                     stdout = commands.getoutput(cmd)
                 except Exception, e:
                     tolog("!!WARNING!!1999!! Tail command threw an exception: %s" % (e))
@@ -4335,8 +4335,8 @@ def sig2exc(sig, frm):
                 tolog(logMsg)
 
                 ret, retNode = updatePandaServer(env['jobDic'][k][1], log = logMsg)
-                if ret == 0:
-                    tolog("Successfully updated panda server at %s" % timeStamp())
+                #if ret == 0:
+                #    tolog("Successfully updated panda server at %s" % timeStamp())
             else:
                 # log should have been transferred
                 env['jobDic'][k][1].pilotErrorDiag = "Job killed by signal %s: Signal handler has set job result to FAILED, ec = %d" %\
@@ -4500,13 +4500,14 @@ def dumpFile(filename, topilotlog=False):
             tolog("!!WARNING!!4000!! Exception caught: %s" % (e))
         else:
             i = 0
+            tolog_lines = "\n"
             for line in f.readlines():
                 i += 1
                 line = line.rstrip()
-                if topilotlog:
-                    tolog("%s" % (line))
-                else:
+                tolog_lines += line
+                if not topilotlog:
                     print "%s" % (line)
+            tolog(tolog_lines)
             f.close()
             tolog("Dumped %d lines from file %s" % (i, filename))
     else:

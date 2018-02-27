@@ -352,7 +352,7 @@ def cleanupAthenaMP(workdir):
         #print("Attempting to cleanup %s" % (ampdir))
         for (p, d, f) in os.walk(ampdir):
             for filename in f:
-                if 'core' in filename or 'pool.root' in filename or 'tmp.' in filename:
+                if 'core' in filename or 'pool.root' in filename or 'tmp.' in filename or '':
                     path = os.path.join(p, filename)
                     path = os.path.abspath(path)
                     #print("Cleaning up %s" % (path))
@@ -368,7 +368,7 @@ def remove(path):
         os.unlink(path)
     except OSError as e:
         print("Problem with deletion: %s : %s [%s]" % (e.errno, e.strerror, path))
-
+        return 1
     return 0
 
 
